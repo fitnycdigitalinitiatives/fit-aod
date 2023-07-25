@@ -1,4 +1,4 @@
-@import url("https://use.typekit.net/cgm8wuu.css");
+@import url("https://use.typekit.net/dse4dnl.css");
 
 body {
   font-family: "halyard-text", sans-serif;
@@ -176,6 +176,122 @@ a:hover {
   border-color: #ff2eaa;
 }
 
+.cta--button,
+.page .browse-preview>a {
+  font-family: halyard-display, sans-serif;
+  text-align: center;
+  position: relative;
+  display: inline-block;
+  vertical-align: top;
+  color: #FFFFFF;
+  background: #000000;
+  padding: 0.45em 1.6em;
+  overflow: hidden;
+  z-index: 0;
+  letter-spacing: 0.05em;
+  font: 700 14px/1.2 halyard-display, sans-serif;
+  border: none;
+  outline-color: #000000;
+}
+
+@media screen and (min-width: 768px) {
+
+  .cta--button,
+  .page .browse-preview>a {
+    padding: 0.3em 1.7em;
+  }
+}
+
+@media screen and (min-width: 1200px) {
+
+  .cta--button,
+  .page .browse-preview>a {
+    padding: 0.2em 1.5em;
+  }
+}
+
+.cta--button:before,
+.page .browse-preview>a::before,
+.cta--button:after,
+.page .browse-preview>a::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: #0036F9;
+  z-index: -1;
+}
+
+.cta--button:after,
+.page .browse-preview>a::after {
+  left: -100%;
+  background-color: #000000;
+  transition: left 0.3s ease;
+}
+
+.cta--button:hover,
+.page .browse-preview>a:hover {
+  color: #FFFFFF;
+}
+
+.cta--button:hover:after,
+.page .browse-preview>a:hover::after {
+  left: 0;
+}
+
+.cta--button span,
+.page .browse-preview>a span {
+  position: relative;
+  z-index: 2;
+}
+
+@media screen and (min-width: 768px) {
+
+  .cta--button span,
+  .page .browse-preview>a span {
+    font-size: 18px;
+  }
+}
+
+@media screen and (min-width: 1200px) {
+
+  .cta--button span,
+  .page .browse-preview>a span {
+    font-size: 20px;
+  }
+}
+
+@media (min-width: 768px) {
+
+  .cta--button,
+  .page .browse-preview>a {
+    font-size: 17px;
+  }
+}
+
+@media (min-width: 1200px) {
+
+  .cta--button,
+  .page .browse-preview>a {
+    font-size: 19px;
+  }
+}
+
+.cta--pink {
+  outline-color: blue;
+}
+
+.cta--pink:before,
+.page .browse-preview>a:before {
+  background-color: #FF2EAA;
+}
+
+.cta--green:before {
+  background-color: #12c477;
+}
+
 /* header */
 .logo h1 {
   font-size: 4.5rem;
@@ -183,11 +299,21 @@ a:hover {
 
 .navbar-brand {
   line-height: 0;
-  margin-right: 0;
 }
 
 .navbar-brand img {
   height: 18px;
+}
+
+.navbar .navbar-nav .nav-link {
+  font-family: "halyard-display", sans-serif;
+  font-weight: 600;
+  font-size: 1.5rem;
+  line-height: 1;
+}
+
+.navbar .navbar-nav .search-button {
+  /* color: #12c477; */
 }
 
 @media (min-width:330px) {
@@ -196,6 +322,19 @@ a:hover {
   }
 }
 
+@media (min-width:768px) {
+  .navbar-brand img {
+    height: 100px;
+  }
+
+  .navbar>.container {
+    align-items: end;
+  }
+
+  .navbar .nav-item:not(:first-of-type) {
+    margin-left: 1rem;
+  }
+}
 
 header .logo img {
   max-height: 50px;
@@ -320,6 +459,8 @@ footer #fit-logo {
 #index .row {
   min-height: calc(100vh - (56px * 2));
 }
+
+
 
 /* Browse/search items */
 .results-header {
@@ -833,8 +974,45 @@ footer #fit-logo {
   padding-bottom: 2rem;
 }
 
+.page .browse-preview {
+  position: relative;
+  margin-bottom: 3rem;
+  padding-bottom: 2rem;
+}
+
+.page .browse-preview:before {
+  content: "";
+  position: absolute;
+  top: 5.5rem;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background-color: #f3f1f1;
+  z-index: -1;
+}
+
+.page .browse-preview>a {
+  margin-top: 1rem;
+}
+
+.page .browse-preview .browse-header {
+  margin-bottom: 3rem !important;
+}
+
+.page .browse-preview .browse-header h2 {
+  font-size: 7rem;
+}
+
+.page .browse-preview .glider .card {
+  background-color: transparent;
+}
+
 @media (min-width:1400px) {
   .page .row.blocks>div:not(:last-child) {
+    padding-bottom: 3rem;
+  }
+
+  .page .browse-preview {
     padding-bottom: 3rem;
   }
 }

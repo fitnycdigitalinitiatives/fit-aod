@@ -8,7 +8,7 @@ $this->headLink(['rel' => 'icon', 'type' => 'image/x-icon', 'href' => $this->ass
   ->prependStylesheet($this->assetUrl('css/style.css'))
   ->prependStylesheet('https://cdnjs.cloudflare.com/ajax/libs/noUiSlider/15.6.0/nouislider.css', 'screen', null, ['integrity' => 'sha512-MKxcSu/LDtbIYHBNAWUQwfB3iVoG9xeMCm32QV5hZ/9lFaQZJVaXfz9aFa0IZExWzCpm7OWvp9zq9gVip/nLMg==', 'crossorigin' => 'anonymous'])
   ->prependStylesheet('https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.15.4/css/all.min.css', 'screen', null, ['integrity' => 'sha256-mUZM63G8m73Mcidfrv5E+Y61y7a12O5mW4ezU3bxqW4=', 'crossorigin' => 'anonymous'])
-  ->prependStylesheet('https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css', 'screen', null, ['integrity' => 'sha384-rbsA2VBKQhggwzxH7pPCaAqO46MgnOM80zW1RWuH61DGLwZJEdK2Kadq2F9CUG65', 'crossorigin' => 'anonymous']);
+  ->prependStylesheet('https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css', 'screen', null, ['integrity' => 'sha384-9ndCyUaIbzAi2FUVXJi0CjmCapSmO7SnpJef0486qhLnuZ2cdeRhO02iuK6FUUVM', 'crossorigin' => 'anonymous']);
 $this->headScript()
   ->prependFile($this->assetUrl('js/advanced-search.js', 'Omeka'))
   ->prependFile($this->assetUrl('js/theme.js'))
@@ -16,7 +16,7 @@ $this->headScript()
   ->prependFile('https://cdnjs.cloudflare.com/ajax/libs/noUiSlider/15.6.0/nouislider.min.js', 'text/javascript', ['integrity' => 'sha512-1mDhG//LAjM3pLXCJyaA+4c+h5qmMoTc7IuJyuNNPaakrWT9rVTxICK4tIizf7YwJsXgDC2JP74PGCc7qxLAHw==', 'crossorigin' => 'anonymous'])
   ->prependFile('https://unpkg.com/infinite-scroll@4.0.1/dist/infinite-scroll.pkgd.min.js', 'text/javascript')
   ->prependFile('https://cdn.jsdelivr.net/npm/corejs-typeahead@1.3.1/dist/typeahead.bundle.min.js', 'text/javascript', ['integrity' => 'sha256-xZuy7z/QR1H5FKCYUbRDj4yvcyMEyVIg4iQUhs8MI+w=', 'crossorigin' => 'anonymous'])
-  ->prependFile('https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js', 'text/javascript', ['integrity' => 'sha384-kenU1KFdBIe4zVF0s0G1M5b4hcpxyD9F7jL+jjXkk+Q2h455rYXK/7HAuoJl+0I4', 'crossorigin' => 'anonymous'])
+  ->prependFile('https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js', 'text/javascript', ['integrity' => 'sha384-geWF76RCwLtnZ8qwWowPQNguL3RmwHVBC9FhGdlKrxdiJJigb/j/68SIy3Te4Bkz', 'crossorigin' => 'anonymous'])
   ->prependFile('https://code.jquery.com/jquery-3.6.0.min.js', 'text/javascript', ['integrity' => 'sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=', 'crossorigin' => 'anonymous']);
 $this->trigger('view.layout');
 $userBar = $this->userBar();
@@ -38,23 +38,10 @@ $userBar = $this->userBar();
 </a>
 <?php echo $userBar; ?>
 <header class="flex-shrink-0">
-  <div class="container pt-5 pb-3 pb-xxl-4 d-none d-md-block">
-    <div class="row justify-content-center">
-      <div class="col-auto">
-        <a href="/" class="logo text-dark text-decoration-none">
-          <h1 class="visually-hidden">
-            <?php echo $escape($site->title()); ?>
-          </h1>
-          <img src="<?php echo $this->assetUrl('img/archive-on-demand.png'); ?>" title="Logo"
-            alt="FIT Archive on Demand Logo">
-        </a>
-      </div>
-    </div>
-  </div>
   <nav class="navbar navbar-expand-md navbar-light">
     <div class="container">
-      <a class="navbar-brand  d-md-none" href="<?php echo $site->url(); ?>">
-        <img src="<?php echo $this->assetUrl('img/archive-on-demand.png'); ?>" alt="FIT Archive on Demand">
+      <a class="navbar-brand py-2" href="<?php echo $site->url(); ?>">
+        <img src="<?php echo $this->assetUrl('img/archive-on-demand-stacked.png'); ?>" alt="FIT Archive on Demand">
       </a>
       <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent"
         aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
