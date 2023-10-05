@@ -1003,6 +1003,10 @@ footer #fit-logo {
   font-size: 7rem;
 }
 
+.page .browse-preview .glider .card .resource-title {
+  font-family: 'halyard-text';
+}
+
 .page .browse-preview .glider .card {
   background-color: transparent;
 }
