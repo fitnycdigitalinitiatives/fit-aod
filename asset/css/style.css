@@ -1214,6 +1214,10 @@ footer #fit-logo {
   z-index: -1;
 }
 
+.page .browse-preview .btn-arrow.disabled {
+  visibility: hidden;
+}
+
 
 
 .page .browse-preview .browse-header h2 {
