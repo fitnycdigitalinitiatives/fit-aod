@@ -7,173 +7,147 @@ $lang = $this->lang();
 
 $this->htmlElement('body')->appendAttribute('class', 'item-set resource browse');
 $totalResults = $this->pagination()->getPaginator()->getTotalCount();
-$sortHeadings = [
-  [
-    'label' => $translate('Title'),
-    'value' => 'dcterms:title'
-  ],
-  [
-    'label' => $translate('Identifier'),
-    'value' => 'dcterms:identifier'
-  ],
-  [
-    'label' => $translate('Class'),
-    'value' => 'resource_class_label'
-  ],
-  [
-    'label' => $translate('Date'),
-    'value' => 'dcterms:date'
-  ],
-  [
-    'label' => $translate('Created'),
-    'value' => 'created'
-  ],
-];
+$sortHeadings = [];
 ?>
 
-<div class="container pt-2 pb-3 pt-md-4 pt-xxl-5 pb-md-4">
-  <div class="row justify-content-center">
-    <div class="col">
-      <?php echo $this->pageTitle($translate('Collections'), 2); ?>
+<div class="container pt-2 pb-4 pb-md-5" id="grid-container">
+  <div class="row" id="grid-header">
+    <div class="col px-sm-5">
+      <div class="row align-items-center mb-3 mb-sm-2 mb-md-1">
+        <div class="col-auto">
+          <div class="page-title">
+            <?php echo $this->pageTitle($translate('Collections'), 2); ?>
+          </div>
+        </div>
+        <div class="w-100 d-sm-none"></div>
+        <div class="col-auto ms-sm-auto mt-3">
+          <div class="card rounded-0 border border-2 border-black">
+            <div class="card-body p-2 p-sm-3 p-md-4 fw-bold">
+              Showing
+              <?php echo number_format($totalResults); ?>
+              <?php echo ($totalResults == 1) ? ' result' : ' results'; ?>
+              <?php if ($totalResults > 0): ?>
+                <div class="d-inline-block ms-2">
+                  <button class="border-0 bg-transparent p-0" type="button" data-bs-toggle="dropdown"
+                    aria-expanded="false">
+                    <i class="fas fa-sort"></i>
+                  </button>
+                  <ul class="dropdown-menu dropdown-menu-end rounded-0 border border-2 border-black" id="sort-dropdown">
+                    <?php echo $this->sortSelector($sortHeadings); ?>
+                  </ul>
+                </div>
+              <?php endif; ?>
+            </div>
+          </div>
+        </div>
+
+      </div>
 
       <?php if ($this->searchFilters()): ?>
-        <div class="results">
-          Showing
-          <?php echo number_format($totalResults); ?>
-          <?php echo ($totalResults == 1) ? ' result' : ' results'; ?> for:
-          <?php echo $this->searchFilters(); ?>
-        </div>
-      <?php else: ?>
-        <div class="results">
-          Showing
-          <?php echo number_format($totalResults); ?>
-          <?php echo ($totalResults == 1) ? ' result' : ' results'; ?>
+        <div class="row mt-3 mt-sm-2 mt-md-1">
+          <div class="col-auto">
+            <?php echo $this->searchFilters(); ?>
+          </div>
         </div>
       <?php endif; ?>
     </div>
   </div>
-</div>
-<div class="container pt-2 pb-3 pt-md-4 pb-md-3">
-  <div class="row justify-content-center">
-    <div class="col">
-      <ul class="nav justify-content-between browse-controls">
-        <li class="nav-item">
-          <?php echo $this->sortSelector($sortHeadings); ?>
-        </li>
-        <li class="nav-item d-none d-md-block">
-          <div class="btn-group" role="group" aria-label="Layout View">
-            <button type="button" class="btn btn-secondary active list" aria-pressed="true">
-              <i class="fas fa-list" aria-hidden="true" title="List View">
-                <span class="visually-hidden">List View</span>
-              </i>
-            </button>
-            <button type="button" class="btn btn-secondary grid">
-              <i class="fas fa-th" aria-hidden="true" title="Grid View">
-                <span class="visually-hidden">Grid View</span>
-              </i>
-            </button>
-          </div>
-        </li>
-      </ul>
-    </div>
-  </div>
-</div>
+  <?php $this->trigger('view.browse.before'); ?>
+  <?php if ($totalResults > 0): ?>
+    <div class="row">
+      <div class="col px-sm-5">
+        <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-4 row-cols-xxl-5 align-items-center" id="grid">
+          <?php
+          $headingTerm = $this->siteSetting('browse_heading_property_term');
+          foreach ($itemSets as $key => $itemSet):
+            $heading = $headingTerm ? $itemSet->value($headingTerm, ['default' => $translate('[Untitled]'), 'lang' => ($filterLocale ? [$lang, ''] : null)]) : $itemSet->displayTitle(null, ($filterLocale ? [$lang, ''] : null));
+            $count = $this->api()->search('items', ['item_set_id' => $itemSet->id(), 'site_id' => $this->currentSite()->id(), 'limit' => 0])->getTotalResults();
+            ?>
+            <div class="col grid-item-container">
+              <div class="card border-0 grid-item">
+                <?php echo $itemSet->linkRaw($this->thumbnail($itemSet, 'medium', ['class' => 'w-100', 'alt' => $heading], false), null, ['class' => 'card-img', 'title' => $heading]); ?>
+                <div class="card-body">
+                  <h3 class="grid-item-title">
+                    <?php echo $itemSet->link($heading, null, ['class' => 'text-dark text-decoration-none', 'title' => $heading]); ?>
+                  </h3>
+                  <div class="item-count collection-search small">
+                    <span class="fst-italic">
+                      <?php echo $count . " items"; ?>
+                    </span>
 
+                    <button class="text-dark border-0 bg-transparent" data-bs-toggle="modal"
+                      data-bs-target="#collectionSearchModal-<?php echo $key; ?>"
+                      aria-label="Search the <?php echo $heading; ?> collection">
+                      <i class="fas fa-search" aria-hidden="true" title="Search the <?php echo $heading; ?> collection">
+                      </i>
+                    </button>
+                    <!-- Modal -->
+                    <div class="modal fade" id="collectionSearchModal-<?php echo $key; ?>" tabindex="-1"
+                      aria-labelledby="collectionSearchModalLabel-<?php echo $key; ?>" aria-hidden="true">
+                      <div class="modal-dialog modal-dialog-centered modal-lg">
+                        <div class="modal-content">
+                          <div class="modal-header">
+                            <h4 class="modal-title" id="collectionSearchModalLabel-<?php echo $key; ?>">Search
+                              the
+                              <?php echo $heading; ?> collection
+                            </h4>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                          </div>
+                          <!-- check if solr/search module is activated by checking if the helper is present, if not use default search -->
+                          <?php
+                          if ($this->getHelperPluginManager()->has('getSearchFormForSite')) {
+                            $formURL = $this->url('site/search', ['__NAMESPACE__' => 'Search\Controller', 'controller' => 'index', 'action' => 'search'], true);
+                            $inputName = 'q';
+                            $hiddenName = 'item_set_id[]';
+                          } else {
+                            $formURL = $this->url('site/resource', ['controller' => 'item', 'action' => 'browse'], true);
+                            $inputName = 'fulltext_search';
+                            $hiddenName = 'item_set_id';
+                          }
 
-<?php $this->trigger('view.browse.before'); ?>
-<div class="container list pt-2 pb-3 pt-md-3 pb-md-4">
-  <div class="row list" id="browse-container">
-    <?php
-    $collectionCount = 1;
-    $headingTerm = $this->siteSetting('browse_heading_property_term');
-    $bodyTerm = $this->siteSetting('browse_body_property_term');
-    foreach ($itemSets as $itemSet):
-      $heading = $headingTerm ? $itemSet->value($headingTerm, ['default' => $translate('[Untitled]'), 'lang' => ($filterLocale ? [$lang, ''] : null)]) : $itemSet->displayTitle(null, ($filterLocale ? [$lang, ''] : null));
-      $body = $bodyTerm ? $itemSet->value($bodyTerm, ['lang' => ($filterLocale ? [$lang, ''] : null)]) : $itemSet->displayDescription(null, ($filterLocale ? [$lang, ''] : null));
-      ?>
-      <div class="col item-container">
-        <div class="card border-0">
-          <?php echo $itemSet->linkRaw($this->thumbnail($itemSet, 'medium', ['class' => 'browse-thumbnail shadow-sm rounded', 'alt' => $heading]), null, ['class' => 'card-img']); ?>
-          <div class="card-body overflow-hidden">
-            <h3 class="item-title">
-              <?php echo $itemSet->link($heading, null, ['class' => 'text-dark text-decoration-none']); ?>
-            </h3>
-            <?php echo $this->ItemDetailsHelper($itemSet); ?>
-            <?php if ($abstract = $itemSet->value('dcterms:abstract', ['lang' => ($filterLocale ? [$lang, ''] : null)])): ?>
-              <div class="abstract">
-                <?php echo $abstract->asHtml(); ?>
-              </div>
-            <?php elseif ($description = $itemSet->value('dcterms:description', ['lang' => ($filterLocale ? [$lang, ''] : null)])): ?>
-              <div class="description">
-                <?php echo $description->asHtml(); ?>
-              </div>
-            <?php endif; ?>
-            <div class="item-count collection-search">
-              <span class="fst-italic">
-                <?php echo $itemSet->itemCount() . " items"; ?>
-              </span>
-
-              <button class="text-dark border-0 bg-transparent" data-bs-toggle="modal"
-                data-bs-target="#collectionSearchModal-<?php echo $collectionCount; ?>"
-                aria-label="Search the <?php echo $heading; ?> collection">
-                <i class="fas fa-search" aria-hidden="true" title="Search the <?php echo $heading; ?> collection">
-                </i>
-              </button>
-              <!-- Modal -->
-              <div class="modal fade" id="collectionSearchModal-<?php echo $collectionCount; ?>" tabindex="-1"
-                aria-labelledby="collectionSearchModalLabel-<?php echo $collectionCount; ?>" aria-hidden="true">
-                <div class="modal-dialog modal-dialog-centered modal-lg">
-                  <div class="modal-content">
-                    <div class="modal-header">
-                      <h4 class="modal-title" id="collectionSearchModalLabel-<?php echo $collectionCount; ?>">Search the
-                        <?php echo $heading; ?> collection</h4>
-                      <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                    </div>
-                    <!-- check if solr/search module is activated by checking if the helper is present, if not use default search -->
-                    <?php
-                    if ($this->getHelperPluginManager()->has('getSearchFormForSite')) {
-                      $formURL = $this->url('site/search', ['__NAMESPACE__' => 'Search\Controller', 'controller' => 'index', 'action' => 'search'], true);
-                      $inputName = 'q';
-                      $hiddenName = 'item_set_id[]';
-                    } else {
-                      $formURL = $this->url('site/resource', ['controller' => 'item', 'action' => 'browse'], true);
-                      $inputName = 'fulltext_search';
-                      $hiddenName = 'item_set_id';
-                    }
-
-                    ?>
-                    <div class="modal-body">
-                      <form class="d-flex" action="<?php echo $this->escapeHtml($formURL); ?>" id="search-form">
-                        <input type="hidden" id="item_set_id" name="<?php echo $hiddenName; ?>"
-                          value="<?php echo $itemSet->id(); ?>">
-                        <div class="input-group">
-                          <input name="<?php echo $inputName; ?>" type="search" autocomplete="off"
-                            class="form-control form-control-lg" value=""
-                            placeholder="<?php echo $translate('Search this collection'); ?>"
-                            aria-label="<?php echo $translate('Search this collection'); ?>">
-                          <button class="btn btn-secondary" type="submit"
-                            aria-label="<?php echo $translate('Search'); ?>">
-                            <i class="fas fa-search" title="<?php echo $translate('Search'); ?>" aria-hidden="true"></i>
-                          </button>
+                          ?>
+                          <div class="modal-body">
+                            <form class="d-flex" action="<?php echo $this->escapeHtml($formURL); ?>" id="search-form">
+                              <input type="hidden" id="item_set_id" name="<?php echo $hiddenName; ?>"
+                                value="<?php echo $itemSet->id(); ?>">
+                              <div class="input-group">
+                                <input name="<?php echo $inputName; ?>" type="search" autocomplete="off"
+                                  class="form-control form-control-lg" value=""
+                                  placeholder="<?php echo $translate('Search this collection'); ?>"
+                                  aria-label="<?php echo $translate('Search this collection'); ?>">
+                                <button class="btn btn-secondary" type="submit"
+                                  aria-label="<?php echo $translate('Search'); ?>">
+                                  <i class="fas fa-search" title="<?php echo $translate('Search'); ?>"
+                                    aria-hidden="true"></i>
+                                </button>
+                              </div>
+                            </form>
+                          </div>
                         </div>
-                      </form>
+                      </div>
                     </div>
                   </div>
                 </div>
               </div>
             </div>
-          </div>
+          <?php endforeach; ?>
         </div>
       </div>
-      <?php $collectionCount++; ?>
-    <?php endforeach; ?>
-  </div>
-</div>
-<?php $this->trigger('view.browse.after'); ?>
-<div class="container pb-5">
-  <div class="row justify-content-center pagination-row">
-    <div class="col-auto">
-      <?php echo $this->pagination(); ?>
     </div>
-  </div>
+    <?php $this->trigger('view.browse.after'); ?>
+    <div class="row justify-content-center pagination-row d-none">
+      <div class="col-auto">
+        <?php echo $this->pagination(); ?>
+      </div>
+    </div>
+  <?php else: ?>
+    <div class="row">
+      <div class="col px-sm-5">
+        <p class="lead">
+          <?php echo $this->translate('We\'re sorry, but your search did not return any results. Please try searching again, or browsing through the items or collections.'); ?>
+        </p>
+      </div>
+    </div>
+
+  <?php endif; ?>
 </div>

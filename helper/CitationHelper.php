@@ -9,76 +9,35 @@ class CitationHelper extends AbstractHelper
   public function __invoke(ItemRepresentation $item)
   {
     $escape = $this->getView()->plugin('escapeHtml');
-    $apaAuthors = '';
-    $chicagoAuthors = '';
-    $mlaAuthors = '';
     $title = $item->displayTitle();
-    $titleCased = $this->titleCase($title);
     $date = $item->value('dcterms:date');
-    $thesis = '';
-    $chicagoThesis = 'Archive on Demand';
-    $mlaThesis = '<em>Archive on Demand</em>';
-    if ($types = $item->value('dcterms:type', ['all' => true])) {
-      foreach ($types as $type) {
-        if (ucfirst($escape($type)) == "Thesis") {
-          $thesis = ' [Master\'s thesis, Fashion Institute of Technology, State University of New York]';
-          $chicagoThesis = 'Master\'s thesis, Fashion Institute of Technology, State University of New York';
-          $mlaThesis = 'Fashion Institute of Technology, State University of New York, Master\'s thesis. <em>Archive on Demand</em>';
-        }
-      }
+    $apaDate = $date;
+    if (strlen($apaDate) == 10) {
+      $apaDate = date_format(date_create($apaDate), "Y, F j");
+    } elseif (strlen($apaDate) == 7) {
+      $apaDate = date_format(date_create($apaDate), "Y, F");
+    }
+    $mlaDate = $date;
+    if (strlen($mlaDate) == 10) {
+      $mlaDate = date_format(date_create($mlaDate), "j M. Y");
+    } elseif (strlen($apaDate) == 7) {
+      $mlaDate = date_format(date_create($mlaDate), "M. Y");
+    }
+    if (str_contains($mlaDate, "May.")) {
+      $mlaDate = str_replace("May.", "May", $mlaDate);
+    }
+    $chicagoDate = $date;
+    if (strlen($chicagoDate) == 10) {
+      $chicagoDate = date_format(date_create($chicagoDate), "F j, Y");
+    } elseif (strlen($apaDate) == 7) {
+      $chicagoDate = date_format(date_create($chicagoDate), "F Y");
     }
     $url = $escape($item->url());
-    if ($contributors = $item->value('dcterms:contributor', ['all' => true])) {
-      $authorList = [];
-      foreach ($contributors as $key => $contributor) {
-        if (str_contains($contributor->asHtml(), 'Author') || str_contains($contributor->asHtml(), 'Creator')) {
-          if (!in_array($contributor, $authorList)) {
-            $authorList[] = $contributor;
-          }
-        }
-      }
-      if (empty($authorList)) {
-        $authorList[] = $contributors[0];
-      }
-      $len = count($authorList);
-      foreach ($authorList as $authorKey => $author) {
-        $lastName = trim(explode(",", $author)[0]);
-        $firstAndMiddle = trim(explode(",", $author)[1]);
-        $firstAndMiddleArray = explode(' ', $firstAndMiddle);
-        $initials = '';
-        foreach ($firstAndMiddleArray as $initialKey => $part) {
-          if ($initialKey == 0) {
-            $initials .= strtoupper($part[0]) . '.';
-          } else {
-            $initials .= ' ' . strtoupper($part[0]) . '.';
-          }
-        }
-        if ($authorKey == 0) {
-          $apaAuthors .= $lastName . ', ' . $initials;
-          $chicagoAuthors .= $author;
-          $mlaAuthors .= $author;
-        } elseif (($len - $authorKey) == 1) {
-          $apaAuthors .= ', & ' . $lastName . ', ' . $initials;
-          $chicagoAuthors .= ', and ' . $firstAndMiddle . ' ' . $lastName;
-          $mlaAuthors .= ', and ' . $firstAndMiddle . ' ' . $lastName;
-        } else {
-          $apaAuthors .= ', ' . $lastName . ', ' . $initials;
-          $chicagoAuthors .= ', ' . $firstAndMiddle . ' ' . $lastName;
-        }
-        if ($len > 2) {
-          $mlaAuthors = $authorList[0] . ', et al';
-        }
-      }
-      $apa = $apaAuthors . ' (' . $date . '). <em>' . $title . '</em>' . $thesis . '. FIT Institutional Repository. ' . $url;
-      $chicago = $chicagoAuthors . '. "' . $titleCased . '." ' . $chicagoThesis . ', ' . $date . '. ' . $url;
-      $mla = $mlaAuthors . '. <em>' . $titleCased . '</em>. ' . $date . '. ' . $mlaThesis . ', ' . $url;
-    } else {
-      $apa = '<em>' . $title . '</em>' . $thesis . '. (' . $date . ')' . '. FIT Institutional Repository. ' . $url;
-      $chicago = '"' . $titleCased . '." ' . $chicagoThesis . ', ' . $date . '. ' . $url;
-      $mla = '<em>' . $titleCased . '</em>. ' . $date . '. ' . $mlaThesis . ', ' . $url;
-    }
+    $apa = 'Fashion Institute of Technology. (' . $apaDate . '). <em>' . $title . '</em> [Video]. Archive on Demand. ' . $url;
+    $chicago = 'Fashion Institute of Technology, "' . $title . '," <em>Archive on Demand</em>, ' . $chicagoDate . ', video, ' . $url;
+    $mla = 'Fashion Institute of Technology. "' . $title . '." <em>Archive on Demand</em>, ' . $mlaDate . ', ' . $url;
     return '
-        <ul class="nav nav-tabs mb-3" id="citationTab" role="tablist">
+        <ul class="nav nav-underline mb-3" id="citationTab" role="tablist">
           <li class="nav-item" role="presentation">
             <button class="nav-link active text-dark" id="apa-tab" data-bs-toggle="tab" data-bs-target="#apa" type="button" role="tab" aria-controls="apa" aria-selected="true">APA</button>
           </li>
@@ -95,7 +54,7 @@ class CitationHelper extends AbstractHelper
               <div class="form-control font-monospace text-break" id="apaCitation">
               ' . str_replace('..', '.', $apa) . '
               </div>
-              <button class="btn btn-secondary clip-button" type="button" id="apa-button" data-clipboard-target="#apaCitation" aria-label="Copy citation to clipboard">
+              <button class="btn btn-dark rounded-0 clip-button" type="button" id="apa-button" data-clipboard-target="#apaCitation" aria-label="Copy citation to clipboard">
                 <i class="fas fa-copy" title="Copy citation to clipboard" aria-hidden="true"></i>
               </button>
             </div>
@@ -105,7 +64,7 @@ class CitationHelper extends AbstractHelper
             <div class="form-control font-monospace text-break" id="mlaCitation">
             ' . str_replace('..', '.', $mla) . '
             </div>
-            <button class="btn btn-secondary clip-button" type="button" id="mla-button" data-clipboard-target="#mlaCitation" aria-label="Copy citation to clipboard">
+            <button class="btn btn-dark rounded-0 clip-button" type="button" id="mla-button" data-clipboard-target="#mlaCitation" aria-label="Copy citation to clipboard">
               <i class="fas fa-copy" title="Copy citation to clipboard" aria-hidden="true"></i>
             </button>
           </div>
@@ -115,7 +74,7 @@ class CitationHelper extends AbstractHelper
             <div class="form-control font-monospace text-break" id="chicagoCitation">
             ' . str_replace('..', '.', $chicago) . '
             </div>
-            <button class="btn btn-secondary clip-button" type="button" id="chicago-button" data-clipboard-target="#chicagoCitation" aria-label="Copy citation to clipboard">
+            <button class="btn btn-dark rounded-0 clip-button" type="button" id="chicago-button" data-clipboard-target="#chicagoCitation" aria-label="Copy citation to clipboard">
               <i class="fas fa-copy" title="Copy citation to clipboard" aria-hidden="true"></i>
             </button>
           </div>

@@ -13,156 +13,128 @@ if ($itemSetShow):
   $this->htmlElement('body')->appendAttribute('class', 'item-set');
   $query['item_set_id'] = $itemSet->id();
 endif;
-$sortHeadings = [
-  [
-    'label' => $translate('Title'),
-    'value' => 'dcterms:title'
-  ],
-  [
-    'label' => $translate('Identifier'),
-    'value' => 'dcterms:identifier'
-  ],
-  [
-    'label' => $translate('Class'),
-    'value' => 'resource_class_label'
-  ],
-  [
-    'label' => $translate('Date'),
-    'value' => 'dcterms:date'
-  ],
-  [
-    'label' => $translate('Created'),
-    'value' => 'created'
-  ],
-];
+$sortHeadings = [];
 ?>
 
-<div class="container pt-2 pb-3 pt-md-4 pt-xxl-5 pb-md-4">
-  <div class="row justify-content-center">
-    <div class="col">
-      <?php if ($itemSetShow || (array_key_exists('item_set_id', $query) && ($item_set_id = $query['item_set_id']) && ($itemSet = $this->api()->read('item_sets', $item_set_id[0])->getContent()) && ($itemSetShow = 1))): ?>
-        <?php echo $this->pageTitle($itemSet->displayTitle(null, ($filterLocale ? $lang : null)), 2); ?>
-      <?php else: ?>
-        <?php echo $this->pageTitle($translate('Items'), 2); ?>
-      <?php endif; ?>
-      <?php if ($totalResults > 0): ?>
-        <?php if ($this->searchFilters() && !$itemSetShow): ?>
-          <div class="results mb-3">
-            Showing
-            <?php echo number_format($totalResults); ?>
-            <?php echo ($totalResults == 1) ? ' result' : ' results'; ?> for:
-            <?php echo $this->searchFilters(); ?>
+<div class="container pt-2 pb-4 pb-md-5" id="grid-container">
+  <div class="row" id="grid-header">
+    <div class="col px-sm-5">
+      <div class="row align-items-center mb-3 mb-sm-2 mb-md-1">
+        <div class="col-auto">
+          <div class="page-title">
+            <?php echo $this->pageTitle($translate('Videos'), 2); ?>
           </div>
-        <?php else: ?>
-          <div class="results mb-3">
-            Showing
-            <?php echo number_format($totalResults); ?>
-            <?php echo ($totalResults == 1) ? ' result' : ' results'; ?>
-          </div>
-        <?php endif; ?>
-        <?php // check if solr/search module is activated by checking if the helper is present?>
-        <?php if (($this->getHelperPluginManager()->has('getFacetsForBrowse')) && (!array_key_exists('scroll_request', $query))): ?>
-          <?php $facetsForBrowse = $this->getFacetsForBrowse($query, $itemSetShow); ?>
-          <?php if ($facetsForBrowse && $facetsForBrowse['facets']): ?>
-            <!-- filter  -->
-            <button id="filter-button" class="btn btn-fit-pink floating-action" type="button" data-bs-toggle="offcanvas"
-              data-bs-target="#searchFilters" aria-controls="searchFilters" aria-label="Filter results">
-              <span class="action-container">
-                <i class="fas fa-filter" aria-hidden="true" title="Filter results">
-                </i>
-                Filter results
-              </span>
-            </button>
-            <div class="offcanvas offcanvas-start shadow border-end-0" data-bs-scroll="true" data-bs-backdrop="false"
-              tabindex="-1" id="searchFilters" aria-labelledby="searchFiltersLabel">
-              <div class="offcanvas-header border-bottom">
-                <h3 class="offcanvas-title" id="searchFiltersLabel">
-                  <?php echo $this->translate('Search Filters'); ?>
-                </h3>
-                <button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas" aria-label="Close"></button>
-              </div>
-              <div class="offcanvas-body p-0">
-                <?php echo $this->partial('search/facets', ['facets' => $facetsForBrowse['facets'], 'dateFacetStats' => $facetsForBrowse['dateFacetStats'], 'queryParams' => $this->params()->fromQuery()]); ?>
-              </div>
-            </div>
-          <?php endif; ?>
-        <?php endif; ?>
-      <?php else: ?>
-        <div class="results mb-3">
-          Showing 0 results for:
-          <?php echo $this->searchFilters(); ?>
         </div>
-        <p class="lead">
-          <?php echo $this->translate('We\'re sorry, but your search did not return any results. Please try searching again, or browsing through the items or collections.'); ?>
-        </p>
-      <?php endif; ?>
-    </div>
-  </div>
-</div>
-<?php if ($totalResults > 0): ?>
-  <div class="container pt-2 pb-3 pt-md-4 pb-md-3">
-    <div class="row justify-content-center">
-      <div class="col">
-        <ul class="nav justify-content-between browse-controls">
-          <li class="nav-item">
-            <?php echo $this->sortSelector($sortHeadings); ?>
-          </li>
-          <li class="nav-item d-none d-md-block">
-            <div class="btn-group" role="group" aria-label="Layout View">
-              <button type="button" class="btn btn-secondary active list" aria-pressed="true" aria-label="List View">
-                <i class="fas fa-list" aria-hidden="true" title="List View">
-                </i>
+        <div class="col-auto">
+          <?php // check if solr/search module is activated by checking if the helper is present?>
+          <?php if (($totalResults > 0) && ($this->getHelperPluginManager()->has('getFacetsForBrowse')) && (!array_key_exists('scroll_request', $query))): ?>
+            <?php $facetsForBrowse = $this->getFacetsForBrowse($query, $itemSetShow); ?>
+            <?php if ($facetsForBrowse && $facetsForBrowse['facets']): ?>
+              <!-- filter  -->
+              <button id="filter-button" class="btn btn-fit-pink floating-action icon-only" type="button"
+                data-bs-toggle="offcanvas" data-bs-target="#searchFilters" aria-controls="searchFilters"
+                aria-label="Filter results">
+                <span class="action-container">
+                  <i class="fas fa-filter" aria-hidden="true" title="Filter results">
+                  </i>
+                </span>
               </button>
-              <button type="button" class="btn btn-secondary grid" aria-label="Grid View">
-                <i class="fas fa-th" aria-hidden="true" title="Grid View">
-                </i>
-              </button>
-            </div>
-          </li>
-        </ul>
-      </div>
-    </div>
-  </div>
-
-
-  <?php $this->trigger('view.browse.before'); ?>
-  <div class="container list pt-2 pb-3 pt-md-3 pb-md-4">
-    <div class="row list" id="browse-container">
-      <?php
-      $headingTerm = $this->siteSetting('browse_heading_property_term');
-      $bodyTerm = $this->siteSetting('browse_body_property_term');
-      foreach ($items as $item):
-        $heading = $headingTerm ? $item->value($headingTerm, ['default' => $translate('[Untitled]'), 'lang' => ($filterLocale ? [$lang, ''] : null)]) : $item->displayTitle(null, ($filterLocale ? [$lang, ''] : null));
-        ?>
-        <div class="col item-container">
-          <div class="card border-0">
-            <?php echo $item->linkRaw($this->thumbnail($item, 'medium', ['class' => 'browse-thumbnail shadow-sm rounded', 'alt' => $heading]), null, ['class' => 'card-img']); ?>
-            <div class="card-body overflow-hidden">
-              <h3 class="item-title">
-                <?php echo $item->link($heading, null, ['class' => 'text-dark text-decoration-none']); ?>
-              </h3>
-              <?php echo $this->ItemDetailsHelper($item); ?>
-              <?php if ($abstract = $item->value('dcterms:abstract', ['lang' => ($filterLocale ? [$lang, ''] : null)])): ?>
-                <div class="abstract">
-                  <?php echo $abstract->asHtml(); ?>
+              <div class="offcanvas offcanvas-start" data-bs-scroll="true" tabindex="-1" id="searchFilters"
+                aria-labelledby="searchFiltersLabel">
+                <div class="offcanvas-header border-bottom">
+                  <h3 class="offcanvas-title" id="searchFiltersLabel">
+                    <?php echo $this->translate('Search Filters'); ?>
+                  </h3>
+                  <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
                 </div>
-              <?php elseif ($description = $item->value('dcterms:description', ['lang' => ($filterLocale ? [$lang, ''] : null)])): ?>
-                <div class="description">
-                  <?php echo $description->asHtml(); ?>
+                <div class="offcanvas-body p-0">
+                  <?php echo $this->partial('search/facets', ['facets' => $facetsForBrowse['facets'], 'dateFacetStats' => $facetsForBrowse['dateFacetStats'], 'queryParams' => $this->params()->fromQuery()]); ?>
+                </div>
+              </div>
+            <?php endif; ?>
+          <?php endif; ?>
+        </div>
+        <div class="w-100 d-sm-none"></div>
+        <div class="col-auto ms-sm-auto mt-3">
+          <div class="card rounded-0 border border-2 border-black">
+            <div class="card-body p-2 p-sm-3 p-md-4 fw-bold">
+              Showing
+              <?php echo number_format($totalResults); ?>
+              <?php echo ($totalResults == 1) ? ' result' : ' results'; ?>
+              <?php if ($totalResults > 0): ?>
+                <div class="d-inline-block ms-2">
+                  <button class="border-0 bg-transparent p-0" type="button" data-bs-toggle="dropdown"
+                    aria-expanded="false">
+                    <i class="fas fa-sort"></i>
+                  </button>
+                  <ul class="dropdown-menu dropdown-menu-end rounded-0 border border-2 border-black" id="sort-dropdown">
+                    <?php echo $this->sortSelector($sortHeadings); ?>
+                  </ul>
                 </div>
               <?php endif; ?>
             </div>
           </div>
         </div>
-      <?php endforeach; ?>
+
+      </div>
+
+      <?php if ($this->searchFilters()): ?>
+        <div class="row mt-3 mt-sm-2 mt-md-1">
+          <div class="col-auto">
+            <?php echo $this->searchFilters(); ?>
+          </div>
+        </div>
+      <?php elseif ($itemSetShow): ?>
+        <ul id="query" class="list-inline mb-md-0">
+          <li class="list-inline-item">
+            <a href="/item" class="remove-query link-dark text-decoration-none">
+              <i aria-hidden="true" title="Remove facet:" class="far fa-times-circle"></i>
+              <span class="visually-hidden">Remove facet:</span>
+              <?php echo $itemSet->displayTitle(); ?>
+            </a>
+          </li>
+        </ul>
+      <?php endif; ?>
     </div>
   </div>
-  <?php $this->trigger('view.browse.after'); ?>
-  <div class="container pb-5">
-    <div class="row justify-content-center pagination-row">
+  <?php $this->trigger('view.browse.before'); ?>
+  <?php if ($totalResults > 0): ?>
+    <div class="row">
+      <div class="col px-sm-5">
+        <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-4 row-cols-xxl-5 align-items-center" id="grid">
+          <?php
+          $headingTerm = $this->siteSetting('browse_heading_property_term');
+          foreach ($items as $item):
+            $heading = $headingTerm ? $item->value($headingTerm, ['default' => $translate('[Untitled]'), 'lang' => ($filterLocale ? [$lang, ''] : null)]) : $item->displayTitle(null, ($filterLocale ? [$lang, ''] : null));
+            ?>
+            <div class="col grid-item-container">
+              <div class="card border-0 grid-item">
+                <?php echo $item->linkRaw($this->thumbnail($item, 'medium', ['class' => 'w-100', 'alt' => $heading]), null, ['class' => 'card-img', 'title' => $heading]); ?>
+                <div class="card-body">
+                  <h3 class="grid-item-title">
+                    <?php echo $item->link($heading, null, ['class' => 'text-dark text-decoration-none', 'title' => $heading]); ?>
+                  </h3>
+                </div>
+              </div>
+            </div>
+          <?php endforeach; ?>
+        </div>
+      </div>
+    </div>
+    <?php $this->trigger('view.browse.after'); ?>
+    <div class="row justify-content-center pagination-row d-none">
       <div class="col-auto">
         <?php echo $this->pagination(); ?>
       </div>
     </div>
-  </div>
-<?php endif; ?>
+  <?php else: ?>
+    <div class="row">
+      <div class="col px-sm-5">
+        <p class="lead">
+          <?php echo $this->translate('We\'re sorry, but your search did not return any results. Please try searching again, or browsing through the items or collections.'); ?>
+        </p>
+      </div>
+    </div>
+
+  <?php endif; ?>
+</div>

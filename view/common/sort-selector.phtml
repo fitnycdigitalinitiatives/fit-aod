@@ -1,26 +1,42 @@
 <?php
-$translate = $this->plugin('translate');
-$escape = $this->plugin('escapeHtml');
-if (!$sortByQuery) {
-    $sortByQuery = 'created';
+$query = $this->params()->fromQuery();
+$sortByQuery = 'dcterms:date';
+$sortOrderQuery = 'desc';
+if (array_key_exists("sort_by", $query) && $query["sort_by"]) {
+    $sortByQuery = $query["sort_by"];
 }
-if (!$sortOrderQuery) {
-    $sortOrderQuery = 'asc';
+if (array_key_exists("sort_order", $query) && $query["sort_order"]) {
+    $sortOrderQuery = $query["sort_order"];
 }
 ?>
-<form class="sorting input-group" action="">
-    <select class="form-select" name="sort_by" aria-label="<?php echo $translate('Sort by'); ?>">
-        <?php foreach ($sortConfig as $sortBy => $label): ?>
-            <option value="<?php echo $escape($sortBy); ?>" <?php echo ($sortByQuery === $sortBy) ? ' selected' : ''; ?>><?php echo $escape($label); ?></option>
-        <?php endforeach; ?>
-    </select>
-    <?php echo $this->queryToHiddenInputs(['sort_by', 'sort_order']); ?>
-    <select class="form-select" name="sort_order" aria-label="<?php echo $translate('Sort order'); ?>">
-        <option value="asc" <?php echo ($sortOrderQuery === 'asc') ? 'selected' : ''; ?>><?php echo $translate('Ascending'); ?></option>
-        <option value="desc" <?php echo ($sortOrderQuery === 'desc') ? 'selected' : ''; ?>><?php echo $translate('Descending'); ?></option>
-    </select>
-    <button class="btn btn-secondary" type="submit" aria-label="<?php echo $translate('Sort'); ?>">
-        <i class="fas fa-sort" aria-hidden="true" title="<?php echo $translate('Sort'); ?>">
-        </i>
-    </button>
-</form>
+
+<li>
+    <button
+        class="dropdown-item <?php echo ($sortByQuery === 'created' && $sortOrderQuery === 'desc') ? 'fw-bold disabled' : ''; ?>"
+        data-sort_by="created" data-sort_order="desc">Recently
+        Added</button>
+</li>
+<li>
+    <button
+        class="dropdown-item <?php echo ($sortByQuery === 'dcterms:date' && $sortOrderQuery === 'desc') ? 'fw-bold disabled' : ''; ?>"
+        data-sort_by="dcterms:date" data-sort_order="desc">Newest
+        to Oldest</button>
+</li>
+<li>
+    <button
+        class="dropdown-item <?php echo ($sortByQuery === 'dcterms:date' && $sortOrderQuery === 'asc') ? 'fw-bold disabled' : ''; ?>"
+        data-sort_by="dcterms:date" data-sort_order="asc">Oldest
+        to Newest</button>
+</li>
+<li>
+    <button
+        class="dropdown-item <?php echo ($sortByQuery === 'dcterms:title' && $sortOrderQuery === 'asc') ? 'fw-bold disabled' : ''; ?>"
+        data-sort_by="dcterms:title" data-sort_order="asc">Title
+        (a to z)</button>
+</li>
+<li>
+    <button
+        class="dropdown-item <?php echo ($sortByQuery === 'dcterms:title' && $sortOrderQuery === 'desc') ? 'fw-bold disabled' : ''; ?>"
+        data-sort_by="dcterms:title" data-sort_order="desc">Title
+        (z to a)</button>
+</li>

@@ -51,7 +51,7 @@ $escape = $this->plugin('escapeHtml');
     <!-- Modal -->
     <div class="modal fade" id="searchModal" tabindex="-1" aria-labelledby="searchModalLabel" aria-hidden="true">
       <div class="modal-dialog modal-lg">
-        <div class="modal-content">
+        <div class="modal-content rounded-0">
           <div class="modal-header">
             <h2 class="modal-title" id="searchModalLabel">
               <?php echo $translate('Site Search'); ?>
@@ -77,8 +77,8 @@ $escape = $this->plugin('escapeHtml');
             <?php endif; ?>
           </div>
           <div class="modal-footer">
-            <button class="btn btn-secondary" type="button" data-bs-toggle="collapse" data-bs-target="#collapseAdvanced"
-              aria-expanded="false" aria-controls="collapseAdvanced">
+            <button class="btn btn-dark rounded-0" type="button" data-bs-toggle="collapse"
+              data-bs-target="#collapseAdvanced" aria-expanded="false" aria-controls="collapseAdvanced">
               <?php echo $translate('Advanced Search Options'); ?>
             </button>
           </div>

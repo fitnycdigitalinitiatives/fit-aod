@@ -39,7 +39,7 @@ $suggesterURL = $form->getOption('search_page')->url() . '/suggester.json';
 <?php echo $this->form()->openTag($form); ?>
 <div class="input-group">
   <?php echo $this->formInput($formQueryInput); ?>
-  <button class="btn btn-secondary" type="submit" aria-label="Search">
+  <button class="btn btn-dark rounded-0" type="submit" aria-label="Search">
     <i class="fas fa-search" title="<?php echo $translate('Search'); ?>" aria-hidden="true"></i>
   </button>
 </div>
@@ -102,77 +102,65 @@ $suggesterURL = $form->getOption('search_page')->url() . '/suggester.json';
 
     <script>
       $(document).ready(function () {
-        //if suggester terms exist in session storage, load them. If not, use getJSON to get them and store them in session storage
-        if (sessionStorage.getItem("suggesterTerms")) {
-          var suggesterTerms = JSON.parse(sessionStorage.getItem("suggesterTerms"));
-          initializeTypeahead(suggesterTerms);
-        } else {
-          var suggesterURL = '<?php echo $suggesterURL; ?>';
-          $.getJSON(suggesterURL, function (suggesterTerms) {
-            sessionStorage.setItem("suggesterTerms", JSON.stringify(suggesterTerms));
-            initializeTypeahead(suggesterTerms);
-          });
-        }
-        function initializeTypeahead(suggesterTerms) {
-          var terms = new Bloodhound({
-            datumTokenizer: Bloodhound.tokenizers.obj.whitespace('term'),
-            queryTokenizer: Bloodhound.tokenizers.whitespace,
-            local: suggesterTerms
-          });
-          var termSuggester = $('#search-form-standard input').typeahead(
-            {
-              hint: false,
-              highlight: true,
-              minLength: 2
+        const suggesterURL = '<?php echo $suggesterURL; ?>';
+        const terms = new Bloodhound({
+          datumTokenizer: Bloodhound.tokenizers.obj.whitespace('term'),
+          queryTokenizer: Bloodhound.tokenizers.whitespace,
+          prefetch: suggesterURL
+        });
+        const termSuggester = $('#search-form-standard input').typeahead(
+          {
+            hint: false,
+            highlight: true,
+            minLength: 2
 
-            },
-            {
-              name: 'terms',
-              source: terms,
-              display: 'term',
-              limit: 15,
-              templates: {
-                suggestion: function (data) {
-                  return '<div><span class="badge rounded-pill bg-secondary float-end ms-1">' + data.count + '</span>' + data.term + '</div>';
-                }
+          },
+          {
+            name: 'terms',
+            source: terms,
+            display: 'term',
+            limit: 15,
+            templates: {
+              suggestion: function (data) {
+                return '<div><span class="badge text-bg-dark rounded-pill float-end ms-1">' + data.count + '</span>' + data.term + '</div>';
               }
-            });
-          termSuggester.on('typeahead:select', function (ev, data) {
-            $(this).blur();
-            var escapedTerm = solrEscape(data.term);
-            var query = '\"' + escapedTerm + '\"';
-            const search_url = new URL(document.getElementById("search-form-standard").action);
-            search_url.searchParams.append($(this).attr("name"), query);
-            search_url.searchParams.append('suggester', 'true');
-            window.location.href = search_url;
+            }
           });
-          //solr query escape from https://github.com/joeybaker/lucene-escape-query/blob/master/index.js
-          function solrEscape(str) {
-            return [].map.call(str, function escapeSpecialCharacter(char) {
-              if (char === '+'
-                || char === '-'
-                || char === '&'
-                || char === '|'
-                || char === '!'
-                || char === '('
-                || char === ')'
-                || char === '{'
-                || char === '}'
-                || char === '['
-                || char === ']'
-                || char === '^'
-                || char === '"'
-                || char === '~'
-                || char === '*'
-                || char === '?'
-                || char === ':'
-                || char === '\\'
-                || char === '/'
-              ) return '\\' + char
-              else return char
-            }).join('')
-          };
-        }
+        termSuggester.on('typeahead:select', function (ev, data) {
+          $(this).blur();
+          const escapedTerm = solrEscape(data.term);
+          const query = '\"' + escapedTerm + '\"';
+          const search_url = new URL(document.getElementById("search-form-standard").action);
+          search_url.searchParams.append($(this).attr("name"), query);
+          search_url.searchParams.append('suggester', 'true');
+          window.location.href = search_url;
+        });
+        //solr query escape from https://github.com/joeybaker/lucene-escape-query/blob/master/index.js
+        function solrEscape(str) {
+          return [].map.call(str, function escapeSpecialCharacter(char) {
+            if (char === '+'
+              || char === '-'
+              || char === '&'
+              || char === '|'
+              || char === '!'
+              || char === '('
+              || char === ')'
+              || char === '{'
+              || char === '}'
+              || char === '['
+              || char === ']'
+              || char === '^'
+              || char === '"'
+              || char === '~'
+              || char === '*'
+              || char === '?'
+              || char === ':'
+              || char === '\\'
+              || char === '/'
+            ) return '\\' + char
+            else return char
+          }).join('')
+        };
 
         $('#search-form-advanced').on('click', '.search-add-filter', function (ev) {
           ev.preventDefault();
@@ -203,12 +191,13 @@ $suggesterURL = $form->getOption('search_page')->url() . '/suggester.json';
         $('#reset-form').on("click", function () {
           $('#search-form-advanced').find('input[type=search], input[type=number], input:text').val('');
           $('#search-form-advanced').find('select').prop("selectedIndex", 0);
+          $('#collection-select').val(null).trigger('change');
         });
 
         function insertFilterAfter(element) {
-          var fieldContainer = $(element).parents('.field');
-          var template = document.getElementById('template-search-filter');
-          var newValue = $(template.content.cloneNode(true).firstElementChild);
+          const fieldContainer = $(element).parents('.field');
+          const template = document.getElementById('template-search-filter');
+          const newValue = $(template.content.cloneNode(true).firstElementChild);
           newValue.appendTo(fieldContainer.find('.search-form-standard-match-group-items'));
           newValue.trigger('o:value-created');
         }
@@ -261,10 +250,14 @@ $suggesterURL = $form->getOption('search_page')->url() . '/suggester.json';
   <?php endif; ?>
 
   <div id="page-actions">
-    <button type="submit" name="submit" class="btn btn-secondary mt-3"
-      value="<?php echo $this->escapeHtml($translate('Search')); ?>"><?php echo $this->escapeHtml($translate('Search')); ?></button>
-    <button type="button" id="reset-form" name="reset" class="btn btn-secondary mt-3"
-      value="<?php echo $this->escapeHtml($translate('Clear form')); ?>"><?php echo $this->escapeHtml($translate('Clear form')); ?></button>
+    <button type="submit" name="submit" class="btn btn-dark rounded-0 mt-3"
+      value="<?php echo $this->escapeHtml($translate('Search')); ?>">
+      <?php echo $this->escapeHtml($translate('Search')); ?>
+    </button>
+    <button type="button" id="reset-form" name="reset" class="btn btn-dark rounded-0 mt-3"
+      value="<?php echo $this->escapeHtml($translate('Clear form')); ?>">
+      <?php echo $this->escapeHtml($translate('Clear form')); ?>
+    </button>
   </div>
   <?php echo $this->form()->closeTag(); ?>
 </div>

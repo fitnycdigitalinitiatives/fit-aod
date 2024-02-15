@@ -22,7 +22,7 @@ $(document).ready(function () {
     if ($('.pagination .next').length) {
       var status = $(`
         <div class="page-load-status">
-          <div class="row justify-content-center pb-5 mb-5">
+          <div class="row justify-content-center mt-3 mt-sm-5">
             <div class="col-auto">
               <div class="spinner-border infinite-scroll-request" role="status">
                 <span class="visually-hidden">Loading...</span>
@@ -33,22 +33,18 @@ $(document).ready(function () {
         `);
       status.hide();
       var loadButton = `
-      <div class="row justify-content-center">
+      <div class="row justify-content-center mt-3 mt-sm-5">
         <div class="col-auto">
-          <button id="load-button" class="btn btn-fit-green floating-action" type="button" aria-controls="searchFilters" aria-label="Load more results">
-            <span class="action-container">
-              <i class="fas fa-plus" aria-hidden="true" title="Load more results">
-              </i>
-              Load More
-            </span>
+          <button id="load-button" class="cta--button cta--pink" type="button" aria-controls="browse-grid" aria-label="Load more results">
+              Load More +
           </button>
         </div>
       </div>
       `;
       $('.pagination-row').after(loadButton).after(status);
-      $('#browse-container').attr('aria-live', 'polite')
+      $('#browse-grid').attr('aria-live', 'polite')
       let nextURL;
-      let appendElement = '.item-container';
+      let appendElement = '.grid-item-container';
       let currentItemCount;
 
       function updateNextURL(doc) {
@@ -81,7 +77,7 @@ $(document).ready(function () {
       // get initial nextURL
       updateNextURL(document);
       getItemCount();
-      let $container = $('#browse-container').infiniteScroll({
+      let $container = $('#grid').infiniteScroll({
         // options
         // use function to set custom URLs
         path: function () {
@@ -105,36 +101,47 @@ $(document).ready(function () {
         updateFocus();
       });
     }
-    // Layout toggle
-    function layoutList() {
-      $('.btn.list').toggleClass("active", true).attr("aria-pressed", "true");
-      $('.btn.grid').toggleClass("active", false).attr("aria-pressed", "false");
-      $('#browse-container').hide().toggleClass("list", true).toggleClass("grid", false).fadeIn("slow");
-      sessionStorage.setItem("browseLayout", "List");
-    }
 
-    function layoutGrid() {
-      $('.btn.grid').toggleClass("active", true).attr("aria-pressed", "true");
-      $('.btn.list').toggleClass("active", false).attr("aria-pressed", "false");
-      $('#browse-container').hide().toggleClass("grid", true).toggleClass("list", false).fadeIn("slow");
-      sessionStorage.setItem("browseLayout", "Grid");
-    }
-    if (sessionStorage.getItem("browseLayout")) {
-      if (sessionStorage.getItem("browseLayout") == "List") {
-        layoutList();
-      } else if (sessionStorage.getItem("browseLayout") == "Grid") {
-        layoutGrid();
+    $("#sort-dropdown .dropdown-item").click(function () {
+      let queryParams = new URLSearchParams(window.location.search);
+      if ($(this).data("sort_by")) {
+        queryParams.set("sort_by", $(this).data("sort_by"));
       }
-    }
-    $('.btn.list').on("click", function () {
-      layoutList();
-    });
-    $('.btn.grid').on("click", function () {
-      layoutGrid();
+      if ($(this).data("sort_order")) {
+        queryParams.set("sort_order", $(this).data("sort_order"));
+      }
+      if ($(this).data("sort")) {
+        queryParams.set("sort", $(this).data("sort"));
+      }
+      queryParams.set("page", 1);
+      window.location.search = queryParams.toString();
     });
   }
   //Media viewer
   if ($('body').hasClass('show')) {
+    new Splide('.splide', {
+      type: 'slide',
+      focus: 0,
+      omitEnd: true,
+      autoWidth: true,
+      height: '65px',
+      gap: '0.5rem',
+      pagination: false,
+      breakpoints: {
+        767: {
+          height: '50px',
+        },
+      }
+    }).mount();
+    $('#media-slider-container .splide .splide__slide button').click(function () {
+      if (!$(this).hasClass("selected")) {
+        $('#media-slider-container .splide .splide__slide button').removeClass('selected').attr('aria-selected', 'false');
+        $(this).addClass('selected').attr('aria-selected', 'true');
+        var activeTab = $(this).data('target');
+        $('#mediaTabContent .tab-pane').removeClass('show active');
+        $(activeTab).addClass('show active');
+      }
+    });
     if (window.matchMedia('(min-width: 768px)').matches) {
       //tooltips
       var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
@@ -142,18 +149,9 @@ $(document).ready(function () {
         return new bootstrap.Tooltip(tooltipTriggerEl)
       })
     }
-    //advance buttons
-    $('#media-sidebar .btnNext').click(function () {
-      var next = $('#mediaTab .nav-item').has('button.active').next('li');
-      if (next.length) {
-        $(next).children('button').trigger('click');
-      } else {
-        $("#mediaTab .nav-item:first").find('button').trigger('click');
-      }
-    });
     // Pause video when changing tabs
-    $('#media-sidebar .nav-link').click(function () {
-      var selectedTab = $(this).data('bs-target');
+    $('#media-slider-container .splide .splide__slide button').click(function () {
+      var selectedTab = $(this).data('target');
       $('#mediaTabContent .tab-pane:not(' + selectedTab + ') .youtube').each(function () {
         $(this)[0].contentWindow.postMessage('{"event":"command","func":"pauseVideo","args":""}', '*');
       });

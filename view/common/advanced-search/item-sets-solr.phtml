@@ -29,22 +29,26 @@ if ($this->status()->isSiteRequest()) {
 ?>
 <div id="item-sets" class="field removable multi-value mb-3" role="group">
     <div class="field-meta form-label">
-        <span id="by-item-set-label" class="label"><?php echo $translate('Search by collection'); ?></span>
+        <span id="by-item-set-label" class="label">
+            <?php echo $translate('Search by collection'); ?>
+        </span>
     </div>
     <div class="inputs">
         <?php foreach ($ids as $id): ?>
-        <div class="value input-group mb-2">
-            <?php echo $this->itemSetSelect([
-                'name' => 'item_set_id[]',
-                'attributes' => [
-                    'value' => $id,
-                    'class' => 'form-select',
-                    'aria-labelledby' =>  'by-item-set-label'
-                ],
-                'options' => $selectOptions,
-            ]); ?>
-        </div>
+            <div class="value input-group mb-2">
+                <?php echo $this->itemSetSelect([
+                    'name' => 'item_set_id[]',
+                    'attributes' => [
+                        'value' => $id,
+                        'class' => 'form-select',
+                        'aria-labelledby' => 'by-item-set-label'
+                    ],
+                    'options' => $selectOptions,
+                ]); ?>
+            </div>
         <?php endforeach; ?>
     </div>
-    <div class="field-description form-text"><?php echo $translate('Searches for resources that are assigned to any of these collections.'); ?></div>
+    <div class="field-description form-text">
+        <?php echo $translate('Searches for resources that are assigned to any of these collections.'); ?>
+    </div>
 </div>

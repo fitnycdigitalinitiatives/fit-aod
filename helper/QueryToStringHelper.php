@@ -81,7 +81,7 @@ class QueryToStringHelper extends AbstractHelper
             }
         }
 
-        $html = '<ul id="current-search" class="list-inline">';
+        $html = '<ul id="query" class="list-inline mb-md-0">';
         foreach ($queryStringArray as $key => $queryString) {
             $html .= '<li class="list-inline-item">' . $queryString . '</li>';
         }
@@ -101,21 +101,21 @@ class QueryToStringHelper extends AbstractHelper
             }
         }
         if (array_key_exists('label', $query) && ($label = $query['label'])) {
-            $basicQuery = $label . ' (' . $basicQuery . ')';
+            $basicQuery = $label;
             unset($query['label']);
         }
         $escape = $this->getView()->plugin('escapeHtml');
         $query['q'] = "";
         unset($query['page']);
         $url = $this->getView()->url('site/search', $params, ['query' => $query]);
-        return '<a href="' . $escape($url) . '" class="link-secondary text-decoration-none"><i aria-hidden="true" title="Remove search term:" class="far fa-times-circle"></i><span class="visually-hidden">Remove search term:</span> ' . $escape($basicQuery) . '</a>';
+        return '<a href="' . $escape($url) . '" class="link-dark remove-query text-decoration-none"><i aria-hidden="true" title="Remove search term:" class="far fa-times-circle"></i><span class="visually-hidden">Remove search term:</span> ' . $escape($basicQuery) . '</a>';
     }
 
     protected function removeFilterLink($queryFilter, $availableSearchFields, $query, $params)
     {
         $escape = $this->getView()->plugin('escapeHtml');
         $label = $availableSearchFields[$queryFilter['field']]['label'];
-        $queryFilterString = $label . ': ' . '"' . $queryFilter['term'] . '"';
+        $queryFilterString = strtolower($label) . ': ' . $queryFilter['term'];
         $values = [];
         foreach ($query['filters']['queries'] as $queryFilterMatch) {
             if ($queryFilterMatch != $queryFilter) {
@@ -125,7 +125,7 @@ class QueryToStringHelper extends AbstractHelper
         $query['filters']['queries'] = $values;
         unset($query['page']);
         $url = $this->getView()->url('site/search', $params, ['query' => $query]);
-        return '<a href="' . $escape($url) . '" class="link-secondary text-decoration-none"><i aria-hidden="true" title="Remove search term:" class="far fa-times-circle"></i><span class="visually-hidden">Remove search term:</span> ' . $escape($queryFilterString) . '</a>';
+        return '<a href="' . $escape($url) . '" class="link-dark remove-query text-decoration-none"><i aria-hidden="true" title="Remove search term:" class="far fa-times-circle"></i><span class="visually-hidden">Remove search term:</span> ' . $escape($queryFilterString) . '</a>';
     }
 
     protected function removeDateRangeLink($date_range_start, $date_range_end, $query, $params)
@@ -136,8 +136,8 @@ class QueryToStringHelper extends AbstractHelper
         $query['date_range_end'] = [""];
         unset($query['page']);
         $url = $this->getView()->url('site/search', $params, ['query' => $query]);
-        $dateRangeString = 'Date range: ' . $date_range_start . ' to ' . $date_range_end;
-        return '<a href="' . $escape($url) . '" class="link-secondary text-decoration-none"><i aria-hidden="true" title="Remove search term:" class="far fa-times-circle"></i><span class="visually-hidden">Remove search term:</span> ' . $escape($dateRangeString) . '</a>';
+        $dateRangeString = $date_range_start . '-' . $date_range_end;
+        return '<a href="' . $escape($url) . '" class="link-dark remove-query text-decoration-none"><i aria-hidden="true" title="Remove search term:" class="far fa-times-circle"></i><span class="visually-hidden">Remove search term:</span> ' . $escape($dateRangeString) . '</a>';
     }
 
     protected function removeCollectionLink($collectionID, $collectionTitle, $query, $params)
@@ -152,8 +152,8 @@ class QueryToStringHelper extends AbstractHelper
         $query['item_set_id'] = $values;
         unset($query['page']);
         $url = $this->getView()->url('site/search', $params, ['query' => $query]);
-        $collectionString = 'Collection: ' . $collectionTitle;
-        return '<a href="' . $escape($url) . '" class="link-secondary text-decoration-none"><i aria-hidden="true" title="Remove search term:" class="far fa-times-circle"></i><span class="visually-hidden">Remove search term:</span> ' . $escape($collectionString) . '</a>';
+        $collectionString = $collectionTitle;
+        return '<a href="' . $escape($url) . '" class="link-dark remove-query text-decoration-none"><i aria-hidden="true" title="Remove search term:" class="far fa-times-circle"></i><span class="visually-hidden">Remove search term:</span> ' . $escape($collectionString) . '</a>';
     }
 
     protected function removeResourceClassLink($resourceClassID, $resourceLabel, $query, $params)
@@ -169,7 +169,7 @@ class QueryToStringHelper extends AbstractHelper
         unset($query['page']);
         $url = $this->getView()->url('site/search', $params, ['query' => $query]);
         $resourceString = 'Resource class: ' . $resourceLabel;
-        return '<a href="' . $escape($url) . '" class="link-secondary text-decoration-none"><i aria-hidden="true" title="Remove search term:" class="far fa-times-circle"></i><span class="visually-hidden">Remove search term:</span> ' . $escape($resourceString) . '</a>';
+        return '<a href="' . $escape($url) . '" class="link-dark remove-query text-decoration-none"><i aria-hidden="true" title="Remove search term:" class="far fa-times-circle"></i><span class="visually-hidden">Remove search term:</span> ' . $escape($resourceString) . '</a>';
     }
 
 
@@ -183,6 +183,6 @@ class QueryToStringHelper extends AbstractHelper
         $query['limit'][$name] = $values;
         unset($query['page']);
         $url = $this->getView()->url('site/search', $params, ['query' => $query]);
-        return '<a href="' . $escape($url) . '" class="link-secondary text-decoration-none"><i aria-hidden="true" title="Remove facet:" class="far fa-times-circle"></i><span class="visually-hidden">Remove facet:</span> ' . $escape($facet) . '</a>';
+        return '<a href="' . $escape($url) . '" class="link-dark remove-query text-decoration-none"><i aria-hidden="true" title="Remove facet:" class="far fa-times-circle"></i><span class="visually-hidden">Remove facet:</span> ' . $escape($facet) . '</a>';
     }
 }

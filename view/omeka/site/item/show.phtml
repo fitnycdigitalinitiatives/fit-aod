@@ -1,4 +1,8 @@
 <?php
+$this->headLink()->appendStylesheet('https://cdn.jsdelivr.net/npm/glider-js@1.7.7/glider.min.css', 'screen', null, ['integrity' => 'sha256-o2HrB5EL5AdkNI2+9n8NzI0p6VflIDQiimYGrayGE30=', 'crossorigin' => 'anonymous']);
+$this->headLink()->appendStylesheet('https://cdn.jsdelivr.net/npm/@splidejs/splide@4.1.4/dist/css/splide.min.css');
+$this->headScript()->appendFile('https://cdn.jsdelivr.net/npm/glider-js@1.7.7/glider.min.js', 'text/javascript', ['integrity' => 'sha256-3/0U+/cLec+S2/6Gu2VYTzbA/2gaBACu5f7fGacrvAY=', 'crossorigin' => 'anonymous']);
+$this->headScript()->appendFile('https://cdn.jsdelivr.net/npm/@splidejs/splide@4.1.4/dist/js/splide.min.js');
 $translate = $this->plugin('translate');
 $escape = $this->plugin('escapeHtml');
 $this->htmlElement('body')->appendAttribute('class', 'item resource show');
@@ -7,6 +11,8 @@ $itemMedia = $item->media();
 //remove captions files from itemMedia so it doesn't display
 foreach ($itemMedia as $key => $media) {
   if ($media->mediaType() == "text/vtt") {
+    unset($itemMedia[$key]);
+  } elseif (strtolower($media->displayTitle()) == "release form") {
     unset($itemMedia[$key]);
   }
 }
@@ -20,16 +26,16 @@ $lang = $this->lang();
 
 <?php if ($embedMedia): ?>
   <?php if ($itemMedia): ?>
-    <div class="container pt-2 pb-3 pt-md-4 pt-xxl-5 pb-md-4">
+    <div class="container pt-2 pb-3">
       <div class="row" id="media-wrapper">
         <?php if ((count($itemMedia) > 1)): ?>
-          <div class="col-md-11">
+          <div class="col-12">
             <div class="media-embeds">
               <div class="tab-content" id="mediaTabContent">
                 <?php $panel_id = 1; ?>
                 <?php foreach ($itemMedia as $media): ?>
-                  <div class="tab-pane fade <?php echo ($panel_id == 1 ? ' show active' : ''); ?>"
-                    id="media-<?php echo $panel_id; ?>" role="tabpanel" aria-labelledby="media-<?php echo $panel_id; ?>-tab">
+                  <div class="tab-pane<?php echo ($panel_id == 1 ? ' show active' : ''); ?>" id="media-<?php echo $panel_id; ?>"
+                    role="tabpanel" aria-labelledby="media-<?php echo $panel_id; ?>-tab">
                     <?php echo $media->render(); ?>
                   </div>
                   <?php
@@ -39,29 +45,39 @@ $lang = $this->lang();
               </div>
             </div>
           </div>
-          <div class="col-md-1 py-1 p-md-0 px-xl-2" id="media-sidebar">
-            <ul class="nav align-items-center flex-md-column d-md-block" id="mediaTab" role="tablist">
-              <?php $tab_id = 1; ?>
-              <?php foreach ($itemMedia as $media): ?>
-                <li class="nav-item p-md-0 mb-md-3" role="presentation">
-                  <button
-                    class="nav-link text-secondary border-0 shadow-sm rounded p-0<?php echo ($tab_id == 1 ? ' active' : ''); ?>"
-                    id="media-<?php echo $tab_id; ?>-tab" data-bs-toggle="tab" data-bs-target="#media-<?php echo $tab_id; ?>"
-                    type="button" role="tab" aria-controls="media-<?php echo $tab_id; ?>"
-                    aria-selected="<?php echo ($tab_id == 1 ? 'true' : 'false'); ?>">
-                    <?php echo $this->thumbnail($media, 'medium', ['class' => 'rounded img-fluid', 'alt' => $media->displayTitle(), 'title' => $media->displayTitle(), 'data-bs-toggle' => 'tooltip']); ?>
-                  </button>
-                </li>
-                <?php
-                $tab_id++;
-              endforeach;
-              ?>
-            </ul>
-            <button class="btn-arrow btnNext border-0 bg-transparent text-secondary d-none d-md-block mx-auto" type="button"
-              aria-controls="mediaTabContent" aria-label="Next">
-              <i class="fas fa-chevron-down" title="Next" aria-hidden="true">
-              </i>
-            </button>
+          <div class="col-12 mt-2" id="media-slider-container">
+            <div class="splide" role="tablist" aria-label="Media tabs">
+              <div class="splide__track">
+                <ul class="splide__list">
+                  <?php $tab_id = 1; ?>
+                  <?php foreach ($itemMedia as $media): ?>
+                    <li class="splide__slide">
+                      <button class="border-0 bg-transparent <?php echo ($tab_id == 1 ? ' selected' : ''); ?>"
+                        id="media-<?php echo $tab_id; ?>-tab" data-target="#media-<?php echo $tab_id; ?>" type="button"
+                        role="tab" aria-controls="media-<?php echo $tab_id; ?>"
+                        aria-selected="<?php echo ($tab_id == 1 ? 'true' : 'false'); ?>"
+                        title="<?php echo $media->displayTitle(); ?>" data-bs-toggle="tooltip" data-bs-placement="bottom"
+                        data-bs-trigger="hover">
+                        <?php echo $this->thumbnail($media, 'medium', ['class' => 'img-fluid', 'alt' => $media->displayTitle()]); ?>
+                      </button>
+                    </li>
+                    <?php $tab_id++; ?>
+                  <?php endforeach; ?>
+                </ul>
+              </div>
+              <div class="splide__arrows">
+                <button class="btn-arrow btnPrevious p-0 border-0 bg-transparent text-dark splide__arrow splide__arrow--prev"
+                  type="button" aria-label="Previous">
+                  <i class="fas fa-chevron-left" aria-hidden="true" title="Previous">
+                  </i>
+                </button>
+                <button class="btn-arrow btnNext p-0 border-0 bg-transparent text-dark splide__arrow splide__arrow--next"
+                  type="button" aria-label="Next">
+                  <i class="fas fa-chevron-right" aria-hidden="true" title="Next">
+                  </i>
+                </button>
+              </div>
+            </div>
           </div>
         <?php else: ?>
           <div class="col">
@@ -107,7 +123,7 @@ $lang = $this->lang();
   <?php endif; ?>
 <?php endif; ?>
 
-<div class="container pt-2 pb-3 py-md-4" id="quick-details">
+<div class="container pt-2 pb-3" id="quick-details">
   <div class="row">
     <div class="col">
       <?php echo $this->pageTitle($item->displayTitle(null, ($filterLocale ? $lang : null)), 2); ?>
@@ -115,14 +131,23 @@ $lang = $this->lang();
       $departments = [];
       foreach ($item->itemSets() as $itemSet) {
         foreach ($itemSet->value('dcterms:type', ['all' => true]) as $itemSetType) {
-          if (($itemSetType == "Department") || ($itemSetType == "Program")) {
+          if (($itemSetType == "Department") || ($itemSetType == "Program") || ($itemSetType == "Student Club") || ($itemSetType == "Council") || ($itemSetType == "Committee")) {
             $departments[] = $itemSet->displayTitle();
+          }
+        }
+      }
+      if (!$departments) {
+        foreach ($item->itemSets() as $itemSet) {
+          foreach ($itemSet->value('dcterms:type', ['all' => true]) as $itemSetType) {
+            if ($itemSetType == "School") {
+              $departments[] = $itemSet->displayTitle();
+            }
           }
         }
       }
       ?>
       <?php if ($departments): ?>
-        <div class="departments fw-bold text-muted">
+        <div class="departments">
           <?php echo implode(", ", $departments) ?>
         </div>
       <?php endif; ?>
@@ -130,12 +155,14 @@ $lang = $this->lang();
     </div>
   </div>
 </div>
-<div class="container pt-2 pb-3 pt-md-4 pt-md-5">
-  <div class="row  justify-content-between">
-    <h3 class="mb-4">
-      <?php echo $translate('About this Item'); ?>
-    </h3>
-    <div class="col-lg-6 col-xxl-7">
+<div class="container" id="metadata">
+  <div class="row align-items-start">
+    <div class="col-12" id="metadata-title">
+      <h3 class="mb-0">
+        <?php echo $translate('About'); ?>
+      </h3>
+    </div>
+    <div class="col-lg-7" id="dc-metadata">
       <?php echo $item->displayValues(); ?>
       <?php if (!$embedMedia): ?>
         <?php if ($itemMedia): ?>
@@ -158,38 +185,156 @@ $lang = $this->lang();
         <?php endif; ?>
       <?php endif; ?>
     </div>
-    <div class="col-lg-5 col-xxl-4">
-      <div class="property">
+    <div class="col-lg-5" id="extra-metadata">
+      <?php
+      $relatedItemsLinks = [];
+      $currentSiteID = $this->currentSite()->id();
+      foreach ($item->value('dcterms:relation', ['all' => true]) as $value) {
+        $valueType = $value->type();
+        if ('resource' == $valueType || strpos($valueType, 'resource') !== false) {
+          $thisResource = $value->valueResource();
+          if ($sites = $thisResource->sites()) {
+            $thisLink = null;
+            foreach ($sites as $site) {
+              if ($site->id() == $currentSiteID) {
+                $thisLink = $value->asHtml();
+              }
+            }
+            if (!$thisLink) {
+              $url = $thisResource->siteUrl(reset($sites)->slug());
+              $title = $thisResource->displayTitle();
+              $thisLink = '<a class="resource-link" target="_blank" href="' . $url . '">' . $this->thumbnail($thisResource, 'medium', ['alt' => $title]) . '<span class="resource-name">' . $title . '</span></a>';
+            }
+            if ($thisLink) {
+              $relatedItemsLinks[] = $thisLink;
+            }
+          }
+        }
+      }
+      foreach ($item->value('dcterms:isPartOf', ['all' => true]) as $value) {
+        $valueType = $value->type();
+        if ('resource' == $valueType || strpos($valueType, 'resource') !== false) {
+          $thisResource = $value->valueResource();
+          if ($sites = $thisResource->sites()) {
+            $thisLink = null;
+            foreach ($sites as $site) {
+              if ($site->id() == $currentSiteID) {
+                $thisLink = $value->asHtml();
+              }
+            }
+            if (!$thisLink) {
+              $url = $thisResource->siteUrl(reset($sites)->slug());
+              $title = $thisResource->displayTitle();
+              $thisLink = '<a class="resource-link" target="_blank" href="' . $url . '">' . $this->thumbnail($thisResource, 'medium', ['alt' => $title]) . '<span class="resource-name">' . $title . '</span></a>';
+            }
+            if ($thisLink) {
+              $relatedItemsLinks[] = $thisLink;
+            }
+          }
+        }
+      }
+      foreach ($item->value('dcterms:hasPart', ['all' => true]) as $value) {
+        $valueType = $value->type();
+        if ('resource' == $valueType || strpos($valueType, 'resource') !== false) {
+          $thisResource = $value->valueResource();
+          if ($sites = $thisResource->sites()) {
+            $thisLink = null;
+            foreach ($sites as $site) {
+              if ($site->id() == $currentSiteID) {
+                $thisLink = $value->asHtml();
+              }
+            }
+            if (!$thisLink) {
+              $url = $thisResource->siteUrl(reset($sites)->slug());
+              $title = $thisResource->displayTitle();
+              $thisLink = '<a class="resource-link" target="_blank" href="' . $url . '">' . $this->thumbnail($thisResource, 'medium', ['alt' => $title]) . '<span class="resource-name">' . $title . '</span></a>';
+            }
+            if ($thisLink) {
+              $relatedItemsLinks[] = $thisLink;
+            }
+          }
+        }
+      }
+      $itemSets = $item->itemSets();
+      $seriesSets = [];
+      $categorySets = [];
+      foreach ($itemSets as $key => $itemSet) {
+        foreach ($itemSet->value('dcterms:type', ['all' => true]) as $itemSetType) {
+          if (strtolower($itemSetType) == "series") {
+            $seriesSets[] = $itemSet;
+            unset($itemSets[$key]);
+            break;
+          } elseif (strtolower($itemSetType) == "category") {
+            $categorySets[] = $itemSet;
+            unset($itemSets[$key]);
+            break;
+          }
+        }
+      }
+      ?>
+      <?php if ($relatedItemsLinks): ?>
+        <div class="property" id="relatedItems">
+          <h4>
+            <?php echo $translate('Related Items'); ?>
+          </h4>
+          <?php foreach ($relatedItemsLinks as $relatedItemsLink): ?>
+            <div class="value">
+              <?php echo $relatedItemsLink; ?>
+            </div>
+          <?php endforeach; ?>
+        </div>
+      <?php endif; ?>
+      <?php if ($itemSets): ?>
+        <div class="property" id="collections">
+          <h4>
+            <?php echo $translate('Collections'); ?>
+          </h4>
+          <?php foreach ($itemSets as $itemSet): ?>
+            <div class="value">
+              <?php echo $itemSet->displayTitle(); ?>
+              <a href="<?php echo $escape($itemSet->url()); ?>" class="ms-1">
+                <i class="fas fa-search" title="Search for this collection" aria-hidden="true"></i>
+              </a>
+            </div>
+          <?php endforeach; ?>
+        </div>
+      <?php endif; ?>
+      <?php if ($seriesSets): ?>
+        <div class="property" id="series">
+          <h4>
+            <?php echo $translate('Series'); ?>
+          </h4>
+          <?php foreach ($seriesSets as $seriesSet): ?>
+            <div class="value">
+              <?php echo $seriesSet->displayTitle(); ?>
+              <a href="<?php echo $escape($seriesSet->url()); ?>" class="ms-1">
+                <i class="fas fa-search" title="Search for this collection" aria-hidden="true"></i>
+              </a>
+            </div>
+          <?php endforeach; ?>
+        </div>
+      <?php endif; ?>
+      <?php if ($categorySets): ?>
+        <div class="property" id="categories">
+          <h4>
+            <?php echo $translate('Categories'); ?>
+          </h4>
+          <?php foreach ($categorySets as $categorySet): ?>
+            <div class="value">
+              <?php echo $categorySet->displayTitle(); ?>
+              <a href="<?php echo $escape($categorySet->url()); ?>" class="ms-1">
+                <i class="fas fa-search" title="Search for this collection" aria-hidden="true"></i>
+              </a>
+            </div>
+          <?php endforeach; ?>
+        </div>
+      <?php endif; ?>
+      <div class="property" id="citation">
         <h4>
           <?php echo $translate('Citation'); ?>
         </h4>
         <?php echo $this->CitationHelper($item); ?>
       </div>
-      <div class="property">
-        <?php $itemSets = $item->itemSets(); ?>
-        <?php if (count($itemSets) > 0): ?>
-          <h4>
-            <?php echo $translate('Collections'); ?>
-          </h4>
-          <?php foreach ($itemSets as $itemSet): ?>
-            <div class="value"><a href="<?php echo $escape($itemSet->url()); ?>"><?php echo $itemSet->displayTitle(null, ($filterLocale ? $lang : null)); ?></a></div>
-          <?php endforeach; ?>
-        <?php endif; ?>
-      </div>
-      <?php if (($this->siteSetting('show_attached_pages', true)) && ($sitePages = $item->sitePages($site->id()))): ?>
-        <div class="property">
-          <h4>
-            <?php echo $translate('Site pages'); ?>
-          </h4>
-          <div class="values">
-            <?php foreach ($sitePages as $sitePage): ?>
-              <div class="value">
-                <?php echo $sitePage->link($sitePage->title()); ?>
-              </div>
-            <?php endforeach; ?>
-          </div>
-        </div>
-      <?php endif; ?>
     </div>
   </div>
 </div>
