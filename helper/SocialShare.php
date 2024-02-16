@@ -11,9 +11,8 @@ class SocialShare extends AbstractHelper
     $escape = $this->getView()->plugin('escapeHtml');
     $title = $item->displayTitle();
     $url = $escape($item->url());
-    $author = $item->value('dcterms:contributor') ? $item->value('dcterms:contributor') . ". " : "";
-    $body = 'From the FIT Institutional Repository:%0D%0A' . str_replace('..', '.', $author) . $title . '%0D%0A' . $url;
-    $subject = $item->displayTitle();
+    $body = 'From Archive on Demand:%0D%0A' . $title . '%0D%0A' . $url;
+    $subject = $title;
     return '
         <!-- Social Share  -->
         <ul id="social-share" class="list-inline mb-0 mt-2 fs-4">

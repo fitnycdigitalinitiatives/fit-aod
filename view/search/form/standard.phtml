@@ -31,7 +31,7 @@ $form->prepare();
 $form->setData($query);
 $form->setAttribute('id', 'search-form-standard');
 $formQueryInput = $form->get('q');
-$formQueryInput->setAttributes(['class' => 'form-control form-control-lg', 'type' => 'search', 'aria-label' => $translate('Search'), 'autocomplete' => 'off']);
+$formQueryInput->setAttributes(['class' => 'form-control form-control-lg', 'id' => 'main-search-input', 'type' => 'search', 'aria-label' => $translate('Search'), 'autocomplete' => 'off']);
 $suggesterURL = $form->getOption('search_page')->url() . '/suggester.json';
 ?>
 

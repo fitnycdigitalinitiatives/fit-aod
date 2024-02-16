@@ -15,6 +15,13 @@ $(document).ready(function () {
 
     return false;
   });
+  // Focus on search modal input
+  const searchModal = document.getElementById('searchModal');
+  if (searchModal) {
+    searchModal.addEventListener('shown.bs.modal', event => {
+      document.getElementById("main-search-input").focus();
+    });
+  }
   // Item browse and search
   if ($('body').hasClass('resource browse') || $('body').hasClass('resource search')) {
     // Infinite scroll/load more
@@ -119,20 +126,22 @@ $(document).ready(function () {
   }
   //Media viewer
   if ($('body').hasClass('show')) {
-    new Splide('.splide', {
-      type: 'slide',
-      focus: 0,
-      omitEnd: true,
-      autoWidth: true,
-      height: '65px',
-      gap: '0.5rem',
-      pagination: false,
-      breakpoints: {
-        767: {
-          height: '50px',
-        },
-      }
-    }).mount();
+    if ($('.splide').length) {
+      new Splide('.splide', {
+        type: 'slide',
+        focus: 0,
+        omitEnd: true,
+        autoWidth: true,
+        height: '65px',
+        gap: '0.5rem',
+        pagination: false,
+        breakpoints: {
+          767: {
+            height: '50px',
+          },
+        }
+      }).mount();
+    }
     $('#media-slider-container .splide .splide__slide button').click(function () {
       if (!$(this).hasClass("selected")) {
         $('#media-slider-container .splide .splide__slide button').removeClass('selected').attr('aria-selected', 'false');
