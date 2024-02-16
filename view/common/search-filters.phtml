@@ -15,6 +15,7 @@
                         $thisTitle = $api->read('item_sets', $item_set_id)->getContent()->displayTitle();
                         if ($filterValue == $thisTitle) {
                             unset($query_copy["item_set_id"][$key]);
+                            unset($query_copy['page']);
                             $removeURL = $url(
                                 'site/resource',
                                 ['controller' => $controller, 'action' => 'browse'],
@@ -30,6 +31,7 @@
                     $query_copy = $query;
                     if (array_key_exists("fulltext_search", $query_copy)) {
                         unset($query_copy["fulltext_search"]);
+                        unset($query_copy['page']);
                         $removeURL = $url(
                             'site/resource',
                             ['controller' => $controller, 'action' => 'browse'],
@@ -45,6 +47,7 @@
                         foreach ($query_copy["property"] as $key => $property) {
                             if ($filterValue == $property["text"]) {
                                 unset($query_copy["property"][$key]);
+                                unset($query_copy['page']);
                                 $removeURL = $url(
                                     'site/resource',
                                     ['controller' => $controller, 'action' => 'browse'],
