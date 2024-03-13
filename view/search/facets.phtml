@@ -47,7 +47,7 @@ $this->headScript()->appendFile($this->assetUrl('js/dateRange.js'));
       </ul>
     </div>
   <?php endif; ?>
-  <?php // check if date facet stats exist and check if the min and max are not the same because if they are there is no need for a range?>
+  <?php // check if date facet stats exist and check if the min and max are not the same because if they are there is no need for a range ?>
   <?php if ((!empty($dateFacetStats)) && (!empty($dateFacetStats["min"])) && (!empty($dateFacetStats["max"])) && ($dateFacetStats["min"] != $dateFacetStats["max"])): ?>
     <?php (isset($queryParams['date_range_start']) && ($queryParams['date_range_start'][0]) && ($queryParams['date_range_start'][0] > $dateFacetStats["min"])) ? ($min = $queryParams['date_range_start'][0]) : ($min = $dateFacetStats["min"]); ?>
     <?php (isset($queryParams['date_range_end']) && ($queryParams['date_range_end'][0]) && ($queryParams['date_range_end'][0] < $dateFacetStats["max"])) ? ($max = $queryParams['date_range_end'][0]) : ($max = $dateFacetStats["max"]); ?>
