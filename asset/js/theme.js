@@ -42,7 +42,7 @@ $(document).ready(function () {
       var loadButton = `
       <div class="row justify-content-center mt-3 mt-sm-5">
         <div class="col-auto">
-          <button id="load-button" class="cta--button cta--pink" type="button" aria-controls="browse-grid" aria-label="Load more results">
+          <button id="load-button" class="cta--button cta--pink" type="button" aria-controls="grid" aria-label="Load more results">
               Load More +
           </button>
         </div>
