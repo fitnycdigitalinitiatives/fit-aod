@@ -336,15 +336,22 @@ button.fit-pink:focus {
   height: 50px;
 }
 
-.navbar .navbar-nav .nav-link {
+.main-navbar .navbar-nav .nav-link {
   font-family: "halyard-display", sans-serif;
   font-weight: 600;
   font-size: 1.5rem;
   line-height: 1;
 }
 
+.main-navbar .user-info .navbar-nav .nav-link {
+  font-family: inherit;
+  font-weight: inherit;
+  font-size: inherit;
+  line-height: 1;
+}
+
 @media (min-width:768px) {
-  header .navbar {
+  header .main-navbar {
     padding-top: 1rem;
   }
 
@@ -352,11 +359,11 @@ button.fit-pink:focus {
     height: 92px;
   }
 
-  .navbar>.container {
+  .main-navbar>.container {
     align-items: end;
   }
 
-  .navbar .nav-item:not(:first-of-type) {
+  .main-navbar .nav-item:not(:first-of-type) {
     margin-left: 1rem;
   }
 }
