@@ -1,4 +1,5 @@
 <?php
+
 namespace OmekaTheme\Helper;
 
 use Laminas\View\Helper\AbstractHelper;
@@ -13,13 +14,17 @@ class CitationHelper extends AbstractHelper
     $date = $item->value('dcterms:date');
     $apaDate = $date;
     if (strlen($apaDate) == 10) {
-      $apaDate = date_format(date_create($apaDate), "Y, F j");
+      if (date_create($apaDate)) {
+        $apaDate = date_format(date_create($apaDate), "Y, F j");
+      }
     } elseif (strlen($apaDate) == 7) {
       $apaDate = date_format(date_create($apaDate), "Y, F");
     }
     $mlaDate = $date;
     if (strlen($mlaDate) == 10) {
-      $mlaDate = date_format(date_create($mlaDate), "j M. Y");
+      if (date_create($mlaDate)) {
+        $mlaDate = date_format(date_create($mlaDate), "j M. Y");
+      }
     } elseif (strlen($apaDate) == 7) {
       $mlaDate = date_format(date_create($mlaDate), "M. Y");
     }
@@ -28,7 +33,9 @@ class CitationHelper extends AbstractHelper
     }
     $chicagoDate = $date;
     if (strlen($chicagoDate) == 10) {
-      $chicagoDate = date_format(date_create($chicagoDate), "F j, Y");
+      if (date_create($chicagoDate)) {
+        $chicagoDate = date_format(date_create($chicagoDate), "F j, Y");
+      }
     } elseif (strlen($apaDate) == 7) {
       $chicagoDate = date_format(date_create($chicagoDate), "F Y");
     }
