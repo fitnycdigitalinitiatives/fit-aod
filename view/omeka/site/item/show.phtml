@@ -1,7 +1,5 @@
 <?php
-$this->headLink()->appendStylesheet('https://cdn.jsdelivr.net/npm/glider-js@1.7.7/glider.min.css', 'screen', null, ['integrity' => 'sha256-o2HrB5EL5AdkNI2+9n8NzI0p6VflIDQiimYGrayGE30=', 'crossorigin' => 'anonymous']);
 $this->headLink()->appendStylesheet('https://cdn.jsdelivr.net/npm/@splidejs/splide@4.1.4/dist/css/splide.min.css');
-$this->headScript()->appendFile('https://cdn.jsdelivr.net/npm/glider-js@1.7.7/glider.min.js', 'text/javascript', ['integrity' => 'sha256-3/0U+/cLec+S2/6Gu2VYTzbA/2gaBACu5f7fGacrvAY=', 'crossorigin' => 'anonymous']);
 $this->headScript()->appendFile('https://cdn.jsdelivr.net/npm/@splidejs/splide@4.1.4/dist/js/splide.min.js');
 $translate = $this->plugin('translate');
 $escape = $this->plugin('escapeHtml');
@@ -38,7 +36,7 @@ $lang = $this->lang();
                     role="tabpanel" aria-labelledby="media-<?php echo $panel_id; ?>-tab">
                     <?php echo $media->render(); ?>
                   </div>
-                  <?php
+                <?php
                   $panel_id++;
                 endforeach;
                 ?>

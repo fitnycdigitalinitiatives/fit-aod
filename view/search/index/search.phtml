@@ -32,6 +32,7 @@
 <?php
 $this->htmlElement('body')->appendAttribute('class', 'resource search');
 $escape = $this->plugin('escapeHtml');
+$translate = $this->plugin('escapeHtml');
 $filterLocale = (bool) $this->siteSetting('filter_locale_values');
 $lang = $this->lang();
 $api = $this->plugin('api');
@@ -41,7 +42,7 @@ $this->headScript()
 if (isset($response)):
   $totalResults = $response->getResourceTotalResults('items');
   $results = $response->getResults('items');
-  ?>
+?>
 
   <div class="container pt-2 pb-4 pb-md-5" id="grid-container">
     <div class="row" id="grid-header">
@@ -49,7 +50,7 @@ if (isset($response)):
         <div class="row align-items-center mb-3 mb-sm-2 mb-md-1">
           <div class="col-auto">
             <div class="page-title">
-              <?php echo $this->pageTitle($this->translate('Search'), 2); ?>
+              <?php echo $this->pageTitle($translate('Search'), 2); ?>
             </div>
           </div>
           <div class="col-auto">
@@ -76,7 +77,7 @@ if (isset($response)):
                   aria-labelledby="searchFiltersLabel">
                   <div class="offcanvas-header border-bottom">
                     <h3 class="offcanvas-title" id="searchFiltersLabel">
-                      <?php echo $this->translate('Search Filters'); ?>
+                      <?php echo $translate('Search Filters'); ?>
                     </h3>
                     <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
                   </div>
@@ -104,7 +105,7 @@ if (isset($response)):
                       <?php
                       $currentSort = $query->getSort();
                       foreach ($sortOptions as $value => $sortOptionLabel):
-                        ?>
+                      ?>
                         <li>
                           <button class="dropdown-item <?php echo ($currentSort == $value) ? 'fw-bold disabled' : ''; ?>"
                             data-sort="<?php echo $value; ?>">
@@ -132,11 +133,10 @@ if (isset($response)):
         <div class="col px-sm-5">
           <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-4 row-cols-xxl-5 align-items-center" id="grid">
             <?php
-            $headingTerm = $this->siteSetting('browse_heading_property_term');
             foreach ($results as $result):
               $item = $api->read('items', $result['id'])->getContent();
-              $heading = $headingTerm ? $item->value($headingTerm, ['default' => $translate('[Untitled]'), 'lang' => ($filterLocale ? [$lang, ''] : null)]) : $item->displayTitle(null, ($filterLocale ? [$lang, ''] : null));
-              ?>
+              $heading = $item->displayTitle(null, ($filterLocale ? [$lang, ''] : null));
+            ?>
               <div class="col grid-item-container">
                 <div class="card border-0 grid-item">
                   <?php echo $item->linkRaw($this->thumbnail($item, 'medium', ['class' => 'w-100', 'alt' => $heading]), null, ['class' => 'card-img', 'title' => $heading]); ?>
@@ -161,7 +161,7 @@ if (isset($response)):
       <div class="row">
         <div class="col px-sm-5">
           <p class="lead">
-            <?php echo $this->translate('We\'re sorry, but your search did not return any results. Please try searching again, or browsing through the items or collections.'); ?>
+            <?php echo $translate('We\'re sorry, but your search did not return any results. Please try searching again, or browsing through the items or collections.'); ?>
           </p>
         </div>
       </div>
@@ -175,7 +175,7 @@ if (isset($response)):
         <div class="row align-items-center mb-3 mb-sm-2 mb-md-1">
           <div class="col-auto">
             <div class="page-title">
-              <?php echo $this->pageTitle($this->translate('Search'), 2); ?>
+              <?php echo $this->pageTitle($translate('Search'), 2); ?>
             </div>
           </div>
         </div>
