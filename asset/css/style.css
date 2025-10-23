@@ -848,12 +848,10 @@ footer #fit-logo {
   color: #6c757d;
 }
 
-.item.resource.show .openseadragon-frame {
-  padding-bottom: calc(9 / 16 * 100%);
-}
-
-.item.resource.show .pdfobject-container::before {
-  padding-top: calc(9 / 16 * 100%);
+.item.resource.show .openseadragon-frame,
+.item.resource.show .pdfobject-container,
+.mirador-viewer-frame {
+  --viewer-aspect-ratio: calc(9 / 16 * 100%);
 }
 
 .embed-responsive-video {
